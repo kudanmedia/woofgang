@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Logo from "./woofgang-logo.png"
+import DogImage from './DogImage';
+import { fetchImages } from './Api';
 
 const Gallery = () => {
   const [images, setImages] = useState([]);
@@ -7,29 +9,14 @@ const Gallery = () => {
   const [page, setPage] = useState(1);
   const [searchedBreed, setSearchedBreed] = useState('');
 
-  const fetchImages = useCallback(async (breed, page) => {
-    try {
-      const endpoint = breed
-        ? `https://dog.ceo/api/breed/${breed}/images/random/12?page=${page}`
-        : `https://dog.ceo/api/breeds/image/random/12?page=${page}`;
-
-      const response = await fetch(endpoint);
-      const data = await response.json();
-
-      if (data.status === 'success' && Array.isArray(data.message)) {
-        setImages(data.message);
-        setSearchedBreed(breed);
-      } else {
-        console.error('Invalid API response:', data);
-      }
-    } catch (error) {
-      console.error('Error fetching images:', error);
-    }
-  }, []);
-
   useEffect(() => {
-    fetchImages(breed, page);
-  }, [breed, page, fetchImages]);
+    const fetchData = async () => {
+      const fetchedImages = await fetchImages(breed, page);
+      setImages(fetchedImages);
+    };
+
+    fetchData();
+  }, [breed, page]);
 
   const handleNextPage = () => {
     if (page < 5) {
@@ -52,11 +39,7 @@ const Gallery = () => {
     <div>
       <div className="mb-4 bg-red-400 p-4 mx-auto flex justify-between items-center">
         <div>
-        <img
-              src={Logo}
-              alt="Woof Gang"
-              className="w-full h-full object-cover"
-            />
+        <DogImage src={Logo} alt="Woof Gang" />
         </div>
         <div>
         <input
@@ -95,12 +78,8 @@ const Gallery = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {images.map((imageUrl, index) => (
-          <div key={index} className="w-full h-64 overflow-hidden">
-            <img
-              src={imageUrl}
-              alt={`Dog ${index}`}
-              className="w-full h-full object-cover"
-            />
+          <div key={index} className="w-full h-64 overflow-hidden image-place-holder">
+            <DogImage src={imageUrl} alt={`Dog ${index}`} />
           </div>
         ))}
       </div>
