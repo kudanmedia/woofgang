@@ -1,10 +1,10 @@
-import logo from './logo.svg';
+import Gallery from './components/Gallery';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <h2>Woof Gang</h2>
+      <Gallery />
     </div>
   );
 }
